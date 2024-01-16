@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+  <title>To-Do List</title>
+  <style>
+    body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+h1 {
+  text-align: center;
+}
+
+#taskForm {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+input {
+  width: 70%;
+  padding: 8px;
+  margin-right: 10px;
+}
+
+button {
+  flex-grow: 1;
+  padding: 10px;
+  background-color: #4caf50;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  background-color: #eee;
+  padding: 10px;
+  margin-bottom: 5px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+}
+
+li.completed {
+  background-color: #d3d3d3;
+}
+
+li button {
+  background-color: #f44336;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+#taskActions {
+  display: flex;
+  justify-content: space-between;
+}
+
+#taskActions button {
+  flex-grow: 1;
+  margin-right: 5px;
+}
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>To-Do List</h1>
+    <div id="taskForm">
+      <input type="text" id="taskInput" placeholder="Add a new task...">
+      <button onclick="addTask()">Add Task</button>
+    </div>
+    <ul id="taskList"></ul>
+    <div id="taskActions">
+      <button onclick="filterTasks('all')">All</button>
+      <button onclick="filterTasks('active')">Active</button>
+      <button onclick="filterTasks('completed')">Completed</button>
+      <button onclick="clearCompleted()">Clear Completed</button>
+    </div>
+  </div>
+
+  <script> 
+  let tasks = [];
+
+function addTask() {
+  const taskInput = document.getElementById("taskInput");
+  const taskList = document.getElementById("taskList");
+
+  if (taskInput.value.trim() === "") {
+    alert("Please enter a task!");
+    return;
+  }
+
+  const task = {
+    id: Date.now(),
+    text: taskInput.value,
+    completed: false,
+  };
+
+  tasks.push(task);
+  updateTasks();
+  taskInput.value = "";
+}
+
+function removeTask(id) {
+  tasks = tasks.filter(task => task.id !== id);
+  updateTasks();
+}
+
+function toggleCompleted(id) {
+  tasks = tasks.map(task => {
+    if (task.id === id) {
+      task.completed = !task.completed;
+    }
+    return task;
+  });
+  updateTasks();
+}
+
+function filterTasks(filterType) {
+  let filteredTasks = [];
+
+  switch (filterType) {
+    case 'all':
+      filteredTasks = tasks;
+      break;
+    case 'active':
+      filteredTasks = tasks.filter(task => !task.completed);
+      break;
+    case 'completed':
+      filteredTasks = tasks.filter(task => task.completed);
+      break;
+  }
+
+  displayTasks(filteredTasks);
+}
+
+function clearCompleted() {
+  tasks = tasks.filter(task => !task.completed);
+  updateTasks();
+}
+
+function updateTasks() {
+  displayTasks(tasks);
+}
+
+function displayTasks(tasksToShow) {
+  const taskList = document.getElementById("taskList");
+  taskList.innerHTML = "";
+
+  tasksToShow.forEach(task => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span class="${task.completed ? 'completed' : ''}">
+        ${task.text}
+      </span>
+      <button onclick="toggleCompleted(${task.id})">Toggle</button>
+      <button onclick="removeTask(${task.id})">Remove</button>
+    `;
+    taskList.appendChild(li);
+  });
+}
+  </script>
+</body>
+</html>
